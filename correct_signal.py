@@ -3,8 +3,6 @@ from scipy.fft import fft, fftfreq
 import numpy as np
 import matplotlib.pyplot as plt
 
-time = np.linspace(0, 10, 10000)
-
 # Create a sample signal
 # t_red = np.linspace(0, 5, num=500)
 # t_yellow = np.linspace(5, 6, num=100)
@@ -22,7 +20,6 @@ def signal(t):
     else:
         return np.sin(4 * np.pi * t)
 
-# FT OF SIGNAL
 
 # x = np.linspace(0, 10, 10000)
 # y = fft([signal(t) for t in x])
@@ -33,8 +30,6 @@ def signal(t):
 # plt.xlim(-10, 10)
 # plt.show()
 
-
-# RAW SIGNAL
 
 # x_red = np.linspace(0, 5, 5000)
 # x_green = np.linspace(5, 9, 4000)
@@ -52,21 +47,17 @@ def signal(t):
 # plt.yticks([])
 # plt.show()
 
-
-# CWT
-scales = np.geomspace(128, 1536, num=100)
-x_vals = [signal(t) for t in time]
+# # Perform CWT
+scales = np.arange(1, 128)
+x_vals = [signal(t) for t in np.linspace(0, 10, 10000)]
 wavelet = 'cmor1.5-1.0'
-sampling_period = np.diff(time).mean()
-coef, freqs = pywt.cwt(x_vals, scales, wavelet, sampling_period=sampling_period)
+coef, freqs = pywt.cwt(x_vals, scales, wavelet, sampling_period=10)
 coef = np.abs(coef[:-1, :-1])
 
 # Plot the CWT
-fig, axs = plt.subplots(1, 1)
-pcm = axs.pcolormesh(time, freqs, coef)
-axs.set_yscale("log", base=2)
-axs.set_xlabel("Time (s)")
-axs.set_ylabel("Frequency (Hz)")
-axs.set_title("Wavelet Transform of Correct Signal")
-fig.colorbar(pcm, ax=axs)
+plt.imshow(coef, extent=[0, 10, 1, 128], cmap='viridis', aspect='auto', interpolation='nearest')
+plt.colorbar(label='CWT Coefficients')
+plt.xlabel('Time')
+plt.ylabel('Scale')
+plt.title('Continuous Wavelet Transform')
 plt.show()
